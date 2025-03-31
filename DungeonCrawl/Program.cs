@@ -287,7 +287,8 @@ namespace DungeonCrawl
 		{
 			PlayerCharacter character = new PlayerCharacter();
 			character.name = "";
-			character.hitpoints = 20;
+            character.hairColor = "";
+            character.hitpoints = 20;
 			character.maxHitpoints = character.hitpoints;
 			character.gold = 0;
 			character.weapon = null;
@@ -327,6 +328,13 @@ namespace DungeonCrawl
             }
 
             Print($"You have {character.hairColor} hair.", ConsoleColor.Yellow);
+
+            Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2 + 5);
+            Print("Type y when ready to depart! ", ConsoleColor.Yellow);
+
+			while (Console.ReadKey(true).Key != ConsoleKey.Y) { }
+
+            Print("Good luck, adventurer!", ConsoleColor.Yellow);
 
             return character;
 		}
