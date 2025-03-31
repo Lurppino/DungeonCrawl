@@ -28,7 +28,6 @@ namespace DungeonCrawl
 		Treasure
 	}
 
-
 	internal class Program
 	{
 		const int INFO_HEIGHT = 6;
@@ -125,7 +124,7 @@ namespace DungeonCrawl
 						DrawInfo(player, monsters, items, messages);
 
 						// Is player dead?
-						if (player.hitpoints < 0)
+						if (player.hitpoints <= 0)
 						{
 							state = GameState.DeathScreen;
 						}
@@ -307,7 +306,7 @@ namespace DungeonCrawl
 			Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2);
 			Print("Welcome Brave Adventurer!");
 			Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2 + 1);
-			Print("What is your name?", ConsoleColor.Yellow);
+			Print("What is your name? ", ConsoleColor.Yellow);
 			while (string.IsNullOrEmpty(character.name))
 			{
 				character.name = Console.ReadLine();
