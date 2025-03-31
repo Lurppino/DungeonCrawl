@@ -794,6 +794,7 @@ namespace DungeonCrawl
 				else
 				{
 					messages.Add("No such item");
+					break;
 				}
 			};
 			return PlayerTurnResult.BackToGame;
