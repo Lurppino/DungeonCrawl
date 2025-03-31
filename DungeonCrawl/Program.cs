@@ -820,7 +820,7 @@ namespace DungeonCrawl
 				if (enemy.position == destinationPlace)
 				{
 					int damage = GetCharacterDamage(character);
-					messages.Add($"You hit {enemy.name} for {damage}!");
+					messages.Add($"You hit {enemy.name} for {damage}! ");
 					enemy.hitpoints -= damage;
 					hitEnemy = true;
 					if (enemy.hitpoints <= 0)
@@ -928,17 +928,17 @@ namespace DungeonCrawl
 			}
 			else if (destination == Map.Tile.Door)
 			{
-				messages.Add("You open a door");
+				messages.Add("You open a door ");
 				character.position = destinationPlace;
 				dirtyTiles.Add(startTile);
 			}
 			else if (destination == Map.Tile.Wall)
 			{
-				messages.Add("You hit a wall");
+				messages.Add("You hit a wall ");
 			}
 			else if (destination == Map.Tile.Stairs)
 			{
-				messages.Add("You find stairs leading down");
+				messages.Add("You find stairs leading down ");
 				return PlayerTurnResult.NextLevel;
 			}
 
@@ -1001,7 +1001,7 @@ namespace DungeonCrawl
 							damage = 1;
 						}
 						character.hitpoints -= damage;
-						messages.Add($"{enemy.name} hits you for {damage} damage!");
+						messages.Add($"{enemy.name} hits you for {damage} damage! ");
 					}
 					else
 					{
