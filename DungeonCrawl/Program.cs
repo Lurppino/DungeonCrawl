@@ -318,7 +318,17 @@ namespace DungeonCrawl
 			}
 			Print($"Welcome {character.name}!", ConsoleColor.Yellow);
 
-			return character;
+            Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2 + 3);
+            Print("What is your hair color? ", ConsoleColor.Yellow);
+
+            while (string.IsNullOrEmpty(character.hairColor))
+            {
+                character.hairColor = Console.ReadLine();
+            }
+
+            Print($"You have {character.hairColor} hair.", ConsoleColor.Yellow);
+
+            return character;
 		}
 
 		static void GiveItem(PlayerCharacter character, Item item)

@@ -10,6 +10,7 @@ namespace DungeonCrawl
     internal class PlayerCharacter
     {
         public string name;
+        public string hairColor;
         public int hitpoints;
         public int maxHitpoints;
         public Item weapon;
