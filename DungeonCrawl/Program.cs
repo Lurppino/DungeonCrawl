@@ -148,10 +148,14 @@ namespace DungeonCrawl
 						Console.SetCursorPosition(Console.WindowWidth/2 - 4, Console.WindowHeight / 2);
 						Print("YOU DIED", ConsoleColor.Yellow);
 						Console.SetCursorPosition(Console.WindowWidth/2 - 4, Console.WindowHeight / 2 + 1);
-						while(true)
+
+                        Print("Play again (y/n)", ConsoleColor.Gray);
+
+                        Console.CursorVisible = false;
+                        while (true)
 						{ 
-							Print("Play again (y/n)", ConsoleColor.Gray);
-							ConsoleKeyInfo answer = Console.ReadKey();
+
+							ConsoleKeyInfo answer = Console.ReadKey(true);
 							if (answer.Key == ConsoleKey.Y)
 							{
 								state = GameState.CharacterCreation;
@@ -163,7 +167,8 @@ namespace DungeonCrawl
 								break;
 							}
 						}
-						break;
+                        Console.CursorVisible = true;
+                        break;
 				};
 			}
 			Console.ResetColor();
