@@ -3,7 +3,6 @@ using System.Numerics;
 
 namespace DungeonCrawl
 {
-
 	enum GameState
 	{
 		CharacterCreation,
@@ -21,58 +20,12 @@ namespace DungeonCrawl
 		BackToGame
 	}
 
-	internal class PlayerCharacter
-	{
-		public string name;
-		public int hitpoints;
-		public int maxHitpoints;
-		public Item weapon;
-		public Item armor;
-		public int gold;
-		public Vector2 position;
-		public List<Item> inventory;
-	}
-
-	internal class Map
-	{
-		public enum Tile : sbyte
-		{
-			Floor,
-			Wall,
-			Door,
-			Monster,
-			Item,
-			Player,
-			Stairs
-		}
-		public int width;
-		public int height;
-		public Tile[] Tiles;
-	}
-
-	internal class Monster
-	{
-		public string name;
-		public Vector2 position;
-		public int hitpoints;
-		public char symbol;
-		public ConsoleColor color;
-	}
-
 	internal enum ItemType
 	{
 		Weapon,
 		Armor,
 		Potion,
 		Treasure
-	}
-
-	internal class Item
-	{
-		public string name;
-		public int quality; // means different things depending on the type
-		public Vector2 position;
-		public ItemType type;
 	}
 
 
