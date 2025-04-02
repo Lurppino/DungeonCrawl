@@ -9,6 +9,7 @@ namespace DungeonCrawl
 		GameLoop,
 		Inventory,
 		DeathScreen,
+		WinScreen,
 		Quit
 	}
 	enum PlayerTurnResult
@@ -82,7 +83,13 @@ namespace DungeonCrawl
 						state = GameState.GameLoop;
 						break;
 					case GameState.GameLoop:
-						DrawMap(currentLevel, dirtyTiles);
+
+                        if (player.position == new Vector2(5, 5))
+                        {
+                            state = GameState.WinScreen;
+                            break;
+                        }
+                        DrawMap(currentLevel, dirtyTiles);
 						dirtyTiles.Clear();
 						DrawEnemies(monsters);
 						DrawItems(items);
@@ -145,22 +152,47 @@ namespace DungeonCrawl
 						}
 
 						break;
-					case GameState.Inventory:
-						// Draw inventory 
-						PlayerTurnResult inventoryResult = DrawInventory(player, messages);
-						if (inventoryResult == PlayerTurnResult.BackToGame)
-						{
-							state = GameState.GameLoop;
-							DrawMapAll(currentLevel);
-							DrawInfo(player, monsters, items, messages);
-						}
-						// Read player command
-						// Change back to game loop
-						break;
+                    case GameState.Inventory:
+                        // Draw inventory 
+                        PlayerTurnResult inventoryResult = DrawInventory(player, messages);
+                        if (inventoryResult == PlayerTurnResult.BackToGame)
+                        {
+                            state = GameState.GameLoop;
+                            DrawMapAll(currentLevel);
+                            DrawInfo(player, monsters, items, messages);
+                        }
+                        // Read player command
+                        // Change back to game loop
+                        break;
+                    case GameState.WinScreen:
+                        DrawWinScreen(random);
+                        Console.Clear();
 
-					case GameState.DeathScreen:
+                        Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2);
+                        Print("YOU WIN!", ConsoleColor.Yellow);
+
+                        Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2 + 1);
+                        Print("Play again (y/n)", ConsoleColor.Yellow);
+
+                        Console.CursorVisible = false;
+                        while (true)
+                        {
+                            ConsoleKeyInfo answer = Console.ReadKey(true);
+                            if (answer.Key == ConsoleKey.Y)
+                            {
+                                state = GameState.CharacterCreation; 
+                                break;
+                            }
+                            else if (answer.Key == ConsoleKey.N)
+                            {
+                                state = GameState.Quit; 
+                                break;
+                            }
+                        }
+                        Console.CursorVisible = true;
+                        break;
+                    case GameState.DeathScreen:
 						DrawEndScreen(random);
-						// Animation is over
 						Console.SetCursorPosition(Console.WindowWidth/2 - 4, Console.WindowHeight / 2);
 						Print("YOU DIED", ConsoleColor.Yellow);
 						Console.SetCursorPosition(Console.WindowWidth/2 - 4, Console.WindowHeight / 2 + 1);
@@ -311,7 +343,48 @@ namespace DungeonCrawl
 				Print(symbol);
 			}
 		}
-		static void DrawEndScreen(Random random)
+        static void DrawWinScreen(Random random)
+        {
+            byte[] speeds = new byte[Console.WindowWidth];
+            byte[] ends = new byte[Console.WindowWidth];
+            for (int i = 0; i < speeds.Length; i++)
+            {
+				speeds[i] = (byte)random.Next(1, 4);
+                ends[i] = 0;
+            }
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            for (int row = 0; row < Console.WindowHeight - 2; row++)
+            {
+                Console.SetCursorPosition(0, row);
+
+                for (int i = 0; i < Console.WindowWidth; i++)
+                {
+                    
+                    if (ends[i] == 0)
+                    {
+                        Console.Write(" ");
+                    }
+                    else
+                    {
+                        Console.Write("▒");
+                    }
+                }
+                Thread.Sleep(100);
+            }
+
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.SetCursorPosition(i, Console.WindowHeight - 1);
+                Console.Write(" ");
+            }
+
+            Console.SetCursorPosition(Console.WindowWidth / 2 - 5, Console.WindowHeight / 2);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("YOU WON!");
+        }
+        static void DrawEndScreen(Random random)
 		{
 			// Run death animation: blood flowing down the screen in columns
 			// Wait until keypress
