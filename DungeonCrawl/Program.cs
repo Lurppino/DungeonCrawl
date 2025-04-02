@@ -20,7 +20,7 @@ namespace DungeonCrawl
 		BackToGame
 	}
 
-	internal enum ItemType
+	 public enum ItemType
 	{
 		Weapon,
 		Armor,
@@ -53,8 +53,12 @@ namespace DungeonCrawl
 			List<int> dirtyTiles = new List<int>();
 			List<string> messages = new List<string>();
 
-			// Main loop
-			GameState state = GameState.CharacterCreation;
+            List<Merchant> merchants = new List<Merchant>();
+            merchants.Add(CreateMerchant("Shopkeeper Bob", 'M', ConsoleColor.Yellow, new Vector2(10, 5)));
+            merchants.Add(CreateMerchant("Merchant Sarah", 'S', ConsoleColor.Green, new Vector2(15, 8)));
+
+            // Main loop
+            GameState state = GameState.CharacterCreation;
 			while (state != GameState.Quit)
 			{
 				switch (state)
@@ -82,8 +86,8 @@ namespace DungeonCrawl
 						dirtyTiles.Clear();
 						DrawEnemies(monsters);
 						DrawItems(items);
-
-						DrawPlayer(player);
+                        DrawMerchants(merchants);
+                        DrawPlayer(player);
 						DrawCommands();
 						DrawInfo(player, monsters, items, messages);
 						// Draw map
@@ -547,12 +551,17 @@ namespace DungeonCrawl
 			return type switch
 			{
 				0 => CreateMonster("Goblin", 5, 'g', ConsoleColor.Green, position),
-				1 => CreateMonster("Bat Man", 2, 'M', ConsoleColor.Magenta, position),
+				1 => CreateMonster("Bat Man", 2, 'B', ConsoleColor.Magenta, position),
 				2 => CreateMonster("Orc", 15, 'o', ConsoleColor.Red, position),
-				3 => CreateMonster("Bunny", 1, 'B', ConsoleColor.Yellow, position)
+				3 => CreateMonster("Rabbit", 1, 'R', ConsoleColor.Yellow, position)
 			};
 		}
-		static Item CreateRandomItem(Random random, Vector2 position)
+        static Merchant CreateMerchant(string name, char symbol, ConsoleColor color, Vector2 position)
+        {
+            return new Merchant("Shopkeeper bob", 'M', ConsoleColor.Yellow, new Vector2(10, 5));
+        }
+
+        static Item CreateRandomItem(Random random, Vector2 position)
 		{
 			ItemType type = Enum.GetValues<ItemType>()[random.Next(4)];
 			Item i = type switch
@@ -699,7 +708,17 @@ namespace DungeonCrawl
 			}
 		}
 
-		static void DrawItems(List<Item> items)
+        static void DrawMerchants(List<Merchant> merchants)
+        {
+            foreach (Merchant m in merchants)
+            {
+                Console.SetCursorPosition((int)m.position.X, (int)m.position.Y);
+                Console.ForegroundColor = m.color;  
+                Console.Write(m.symbol);           
+            }
+        }
+
+        static void DrawItems(List<Item> items)
 		{
 			foreach (Item m in items)
 			{
