@@ -84,7 +84,7 @@ namespace DungeonCrawl
 						break;
 					case GameState.GameLoop:
 
-                        if (player.position == new Vector2(5, 5))
+                        if (player.gold == 30)
                         {
                             state = GameState.WinScreen;
                             break;
