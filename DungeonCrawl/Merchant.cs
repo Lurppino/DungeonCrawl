@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-using DungeonCrawl;  
+using DungeonCrawl;
 
 namespace DungeonCrawl
 {
@@ -30,7 +30,7 @@ namespace DungeonCrawl
             potion.name = "Apple Juice";
             potion.quality = 10;
             potion.position = position;
-            potion.type = ItemType.Potion;  
+            potion.type = ItemType.Potion;
 
             Item sword = new Item();
             sword.name = "Helmet";
@@ -48,6 +48,23 @@ namespace DungeonCrawl
             inventory.Add(potion);
             inventory.Add(armor);
             inventory.Add(sword);
+        }
+
+        public void ShowInventory()
+        {
+            
+
+            if (inventory.Count == 0)
+            {
+                Console.WriteLine("No items available.");
+                return;
+            }
+
+            for (int i = 0; i < inventory.Count; i++)
+            {
+                var item = inventory[i];
+                Console.WriteLine($"{i + 1}. {item.name} ({item.type}) - Quality: {item.quality}");
+            }
         }
     }
 }

@@ -90,11 +90,22 @@ namespace DungeonCrawl
                         DrawPlayer(player);
 						DrawCommands();
 						DrawInfo(player, monsters, items, messages);
-						// Draw map
-						// Draw information
-						// Wait for player command
-						// Process player command
-						while (true)
+
+
+                        foreach (var merchant in merchants)
+                        {
+                            if (player.position == merchant.position)
+                            {
+                                
+                                HandleMerchantInteraction(player, merchant);
+                                break;
+                            }
+                        }
+                        // Draw map
+                        // Draw information
+                        // Wait for player command
+                        // Process player command
+                        while (true)
 						{
 							messages.Clear();
 							PlayerTurnResult result = DoPlayerTurn(currentLevel, player, monsters, items, dirtyTiles, messages);
@@ -146,6 +157,7 @@ namespace DungeonCrawl
 						// Read player command
 						// Change back to game loop
 						break;
+
 					case GameState.DeathScreen:
 						DrawEndScreen(random);
 						// Animation is over
@@ -180,7 +192,49 @@ namespace DungeonCrawl
 			Console.CursorVisible = true;
 		}
 
-		static void PrintLine(string text, ConsoleColor color)
+        static void HandleMerchantInteraction(PlayerCharacter player, Merchant merchant)
+        {
+            Console.Clear();
+            Console.WriteLine($"{merchant.name}'s Shop");
+
+            
+            merchant.ShowInventory();
+
+            Console.WriteLine("\nEnter the number of the item you want to buy, or '0' to leave.");
+
+            while (true)
+            {
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out int itemNumber) && itemNumber >= 0 && itemNumber <= merchant.inventory.Count)
+                {
+                    if (itemNumber == 0)
+                    {
+
+                        Console.WriteLine("Thank you for visiting the shop!");
+
+                        return;
+                    }
+                    else
+                    {
+                        var item = merchant.inventory[itemNumber - 1]; 
+                        if (player.CanAfford(item))
+                        {
+                            player.BuyItem(merchant, item);
+                            player.ShowInventory(); 
+                        }
+                        else
+                        {
+                            Console.WriteLine("You don't have enough gold.");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice. Please enter a valid number.");
+                }
+            }
+        }
+        static void PrintLine(string text, ConsoleColor color)
 		{
 			Console.ForegroundColor = color;
 			Console.WriteLine(text);
