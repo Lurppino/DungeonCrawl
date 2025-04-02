@@ -985,6 +985,7 @@ namespace DungeonCrawl
 				{
 					int damage = GetCharacterDamage(character);
 					messages.Add($"You hit {enemy.name} for {damage}! ");
+					messages.Add($"{enemy.name} has {enemy.hitpoints} HP left! ");
 					enemy.hitpoints -= damage;
 					hitEnemy = true;
 					if (enemy.hitpoints <= 0)
