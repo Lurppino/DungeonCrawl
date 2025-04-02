@@ -12,7 +12,7 @@ namespace DungeonCrawl
     internal class Merchant
     {
         public string name;
-        public Vector2 position;
+        public Vector2 position = new Vector2(1,1);
         public char symbol;
         public ConsoleColor color;
         public List<Item> inventory;
@@ -28,21 +28,21 @@ namespace DungeonCrawl
             
             Item potion = new Item();
             potion.name = "Apple Juice";
-            potion.quality = 10;
+            potion.quality = 2;
             potion.position = position;
             potion.type = ItemType.Potion;
 
             Item sword = new Item();
             sword.name = "Helmet";
-            sword.quality = 50;
+            sword.quality = 4;
             sword.position = position;
-            sword.type = ItemType.Weapon;
+            sword.type = ItemType.Armor;
 
             Item armor = new Item();
             armor.name = "Sword";
-            armor.quality = 30;
+            armor.quality = 6;
             armor.position = position;
-            armor.type = ItemType.Armor;
+            armor.type = ItemType.Weapon;
 
             
             inventory.Add(potion);
@@ -52,7 +52,6 @@ namespace DungeonCrawl
 
         public void ShowInventory()
         {
-            
 
             if (inventory.Count == 0)
             {

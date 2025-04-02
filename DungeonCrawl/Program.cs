@@ -8,6 +8,7 @@ namespace DungeonCrawl
 		CharacterCreation,
 		GameLoop,
 		Inventory,
+		MerchantInteraction,
 		DeathScreen,
 		WinScreen,
 		Quit
@@ -55,8 +56,11 @@ namespace DungeonCrawl
 			List<string> messages = new List<string>();
 
             List<Merchant> merchants = new List<Merchant>();
-            merchants.Add(CreateMerchant("Shopkeeper Bob", 'M', ConsoleColor.Yellow, new Vector2(10, 5)));
-            merchants.Add(CreateMerchant("Merchant Sarah", 'S', ConsoleColor.Green, new Vector2(15, 8)));
+            merchants.Add(CreateMerchant("Shopkeeper Bob", 'M', ConsoleColor.Yellow, new Vector2(1, 1)));
+            merchants.Add(CreateMerchant("Merchant Sarah", 'M', ConsoleColor.Yellow, new Vector2(1, 1)));
+
+            merchants[0].position = new Vector2(10, 1); 
+            merchants[1].position = new Vector2(1, 20);
 
             // Main loop
             GameState state = GameState.CharacterCreation;
@@ -103,9 +107,8 @@ namespace DungeonCrawl
                         {
                             if (player.position == merchant.position)
                             {
-                                
-                                HandleMerchantInteraction(player, merchant);
-                                break;
+                                state = GameState.MerchantInteraction; 
+                                break;  
                             }
                         }
                         // Draw map
@@ -163,6 +166,35 @@ namespace DungeonCrawl
                         }
                         // Read player command
                         // Change back to game loop
+                        break;
+                    case GameState.MerchantInteraction:
+                        Merchant currentMerchant = null;
+                        foreach (var merchant in merchants)
+                        {
+                            if (player.position == merchant.position)
+                            {
+                                currentMerchant = merchant;
+                                break;
+                            }
+                        }
+
+                        if (currentMerchant != null)
+                        {
+                            PlayerTurnResult merchantResult = HandleMerchantInteraction(player, currentMerchant, messages);
+
+                            if (merchantResult == PlayerTurnResult.BackToGame)
+                            {
+                                state = GameState.GameLoop; 
+                                DrawMapAll(currentLevel);
+                                DrawInfo(player, monsters, items, messages);
+                            }
+                        }
+                        else
+                        { 
+                            state = GameState.GameLoop;
+                            DrawMapAll(currentLevel);
+                            DrawInfo(player, monsters, items, messages);
+                        }
                         break;
                     case GameState.WinScreen:
                         DrawWinScreen(random);
@@ -224,45 +256,75 @@ namespace DungeonCrawl
 			Console.CursorVisible = true;
 		}
 
-        static void HandleMerchantInteraction(PlayerCharacter player, Merchant merchant)
+        static PlayerTurnResult HandleMerchantInteraction(PlayerCharacter player, Merchant merchant, List<string> messages)
         {
             Console.Clear();
-            Console.WriteLine($"{merchant.name}'s Shop");
+            Console.SetCursorPosition(1, 1);
+            PrintLine($"{merchant.name}'s Shop", ConsoleColor.Cyan);
 
-            
-            merchant.ShowInventory();
+            // Show merchant's inventory for sale
+            if (merchant.inventory.Count == 0)
+            {
+                PrintLine("No items available for sale.", ConsoleColor.Gray);
+            }
+            else
+            {
+                ItemType currentType = ItemType.Weapon;
+                for (int i = 0; i < merchant.inventory.Count; i++)
+                {
+                    Item item = merchant.inventory[i];
+                    if (currentType == ItemType.Weapon && item.type == ItemType.Armor)
+                    {
+                        currentType = ItemType.Armor;
+                        PrintLine("Armors", ConsoleColor.DarkRed);
+                    }
+                    else if (currentType == ItemType.Armor && item.type == ItemType.Potion)
+                    {
+                        currentType = ItemType.Potion;
+                        PrintLine("Potions", ConsoleColor.DarkMagenta);
+                    }
 
-            Console.WriteLine("\nEnter the number of the item you want to buy, or '0' to leave.");
+                    // Print item with price info (change 'quality' to 'price' for clarity)
+                    Print($"{i + 1}. ", ConsoleColor.Cyan);
+                    PrintLine($"{item.name} ({item.type}) - Quality: {item.quality} - Price: {item.quality} gold", ConsoleColor.White);
+                }
+            }
 
+            // While loop for handling item selection and purchasing
             while (true)
             {
-                string input = Console.ReadLine();
-                if (int.TryParse(input, out int itemNumber) && itemNumber >= 0 && itemNumber <= merchant.inventory.Count)
+                Print("Choose item to buy (1 to N) or press 'Q' to cancel: ", ConsoleColor.Yellow);
+                string choiceStr = Console.ReadLine();
+                int selectionIndex = 0;
+
+                if (choiceStr.ToUpper() == "Q")
                 {
-                    if (itemNumber == 0)
+                    return PlayerTurnResult.BackToGame; // Exit store and return to game
+                }
+                else if (int.TryParse(choiceStr, out selectionIndex) && selectionIndex >= 1 && selectionIndex <= merchant.inventory.Count)
+                {
+                    // Adjust selection index for 0-based index
+                    Item selectedItem = merchant.inventory[selectionIndex - 1];
+
+                    // Check if the player has enough gold
+                    if (player.gold >= selectedItem.quality)
                     {
-
-                        Console.WriteLine("Thank you for visiting the shop!");
-
-                        return;
+                        player.gold -= selectedItem.quality; // Deduct price from player
+                        player.inventory.Add(selectedItem); // Add item to player's inventory
+                        messages.Add($"You bought: {selectedItem.name} for {selectedItem.quality} gold!");
                     }
                     else
                     {
-                        var item = merchant.inventory[itemNumber - 1]; 
-                        if (player.CanAfford(item))
-                        {
-                            player.BuyItem(merchant, item);
-                            player.ShowInventory(); 
-                        }
-                        else
-                        {
-                            Console.WriteLine("You don't have enough gold.");
-                        }
+                        messages.Add("Not enough gold.");
                     }
+
+                    // Return to the merchant shop after transaction
+                    return PlayerTurnResult.BackToGame;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid choice. Please enter a valid number.");
+                    // Handle invalid selection or non-numeric input
+                    messages.Add("Invalid input. Please select a valid number or press 'Q' to cancel.");
                 }
             }
         }
